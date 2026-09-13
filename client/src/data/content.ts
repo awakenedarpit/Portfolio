@@ -17,6 +17,7 @@ export const projects = [
     accent: "violet",
     index: "01",
     featured: true,
+    images: ["/projects/quantum-flow.webp"],
   },
   {
     title: "COSMOS",
@@ -28,6 +29,7 @@ export const projects = [
     accent: "blue",
     index: "02",
     featured: true,
+    images: [],
   },
   {
     title: "VOX",
@@ -39,6 +41,7 @@ export const projects = [
     accent: "mint",
     index: "03",
     featured: false,
+    images: [],
   },
   {
     title: "Final Birthday Surprise",
@@ -50,6 +53,7 @@ export const projects = [
     accent: "peach",
     index: "04",
     featured: false,
+    images: [],
   },
   {
     title: "Bow-and-Heart",
@@ -61,6 +65,7 @@ export const projects = [
     accent: "peach",
     index: "05",
     featured: false,
+    images: [],
   },
 ];
 

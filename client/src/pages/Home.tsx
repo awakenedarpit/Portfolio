@@ -15,6 +15,17 @@ import {
   X,
 } from "lucide-react";
 import { focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
+import { fetchPortfolioProjects } from "@/lib/supabase";
+
+const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
+function useProjectContent() {
+  const [items, setItems] = useState(projects);
+  useEffect(() => {
+    fetchPortfolioProjects().then((remote) => { if (remote?.length) setItems(remote.map((project) => ({ ...project, index: project.project_index })) as typeof projects); }).catch(() => { /* keep defaults */ });
+    try { const saved = localStorage.getItem(PROJECT_STORAGE_KEY); if (saved) setItems(JSON.parse(saved)); } catch { /* keep defaults */ }
+  }, []);
+  return items;
+}
 
 const navItems = [
   { label: "Home", href: "#home" },
@@ -148,12 +159,13 @@ function Skills() {
   return <section id="skills" className="section section-slate section-pad"><div className="container"><SectionHeader index="04" title="Tools for the journey" copy="A growing toolkit, not a list of claims. Each one is an invitation to go deeper." light /><div className="skills-layout"><div className="skill-tabs" role="tablist" aria-label="Skill categories">{skillGroups.map((item, i) => <button className={selected === i ? "selected" : ""} key={item.title} onClick={() => setSelected(i)} role="tab" aria-selected={selected === i}><span>{item.label}</span>{item.title}<ArrowUpRight size={15} /></button>)}</div><div className="skill-display reveal" role="tabpanel"><div className="skill-orb"><span>{group.label}</span></div><div><p className="display-label">Now exploring</p><h3>{group.title}</h3><div className="skill-list">{group.items.map((item) => <span key={item}><Check size={13} />{item}</span>)}</div></div></div></div></div></section>;
 }
 
-function ProjectVisual({ accent, index }: { accent: string; index: string }) {
-  return <div className={`project-visual visual-${accent}`}><span className="project-index">{index}</span><div className="visual-grid-lines" /><div className="project-shape"><div /><div /><div /></div><span className="visual-label">PROJECT / {index}</span></div>;
+function ProjectVisual({ accent, index, images, title }: { accent: string; index: string; images?: string[]; title: string }) {
+  return <div className={`project-visual visual-${accent}`}>{images?.[0] ? <img className="project-preview-image" src={images[0]} alt={`${title} preview`} /> : <><div className="visual-grid-lines" /><div className="project-shape"><div /><div /><div /></div></>}<span className="project-index">{index}</span><span className="visual-label">{images?.[0] ? "PROJECT PREVIEW" : `PROJECT / ${index}`}</span></div>;
 }
 
 function Projects() {
-  return <section id="projects" className="section section-dark section-pad projects-section"><div className="container"><SectionHeader index="05" title="Selected experiments" copy="A few places where ideas get a surface to live on. Details stay editable until they&apos;re verified." /><div className="projects-grid">{projects.map((project) => <article className={`project-card ${project.featured ? "project-featured" : ""} reveal`} key={project.title}><ProjectVisual accent={project.accent} index={project.index} /><div className="project-info"><div><p className="project-category">{project.category}</p><h3>{project.title}</h3></div><ArrowUpRight className="project-arrow" size={25} /><p className="project-description">{project.description}</p><div className="project-footer"><div className="tech-tags">{project.technologies.map((tech) => <span key={tech}>{tech}</span>)}</div><div className="project-links"><a href={project.github} target="_blank" rel="noreferrer" aria-label={`Open ${project.title} on GitHub`}>GitHub <MoveUpRight size={13} /></a>{project.live ? <a href={project.live} target="_blank" rel="noreferrer" aria-label={`See live demo for ${project.title}`}>See live demo <MoveUpRight size={13} /></a> : <span className="project-demo-pending">Demo coming soon</span>}</div></div></div></article>)}</div></div></section>;
+  const projectItems = useProjectContent();
+  return <section id="projects" className="section section-dark section-pad projects-section"><div className="container"><SectionHeader index="05" title="Selected experiments" copy="A few places where ideas get a surface to live on. Details stay editable until they&apos;re verified." /><div className="projects-grid">{projectItems.map((project) => <article className={`project-card ${project.featured ? "project-featured" : ""} reveal`} key={project.title}><ProjectVisual accent={project.accent} index={project.index} images={project.images} title={project.title} /><div className="project-info"><div><p className="project-category">{project.category}</p><h3>{project.title}</h3></div><ArrowUpRight className="project-arrow" size={25} /><p className="project-description">{project.description}</p><div className="project-footer"><div className="tech-tags">{project.technologies.map((tech) => <span key={tech}>{tech}</span>)}</div><div className="project-links"><a href={project.github} target="_blank" rel="noreferrer" aria-label={`Open ${project.title} on GitHub`}>GitHub <MoveUpRight size={13} /></a>{project.live ? <a href={project.live} target="_blank" rel="noreferrer" aria-label={`See live demo for ${project.title}`}>See live demo <MoveUpRight size={13} /></a> : <span className="project-demo-pending">Demo coming soon</span>}</div></div></div></article>)}</div></div></section>;
 }
 
 function Hackathons() {
