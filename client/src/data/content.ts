@@ -96,5 +96,5 @@ export const journey = [
 ];
 
 export const certifications = [
-  { id: "fallback-1", title: "Add your first certification", caption: "Upload a proof photo and add its caption from the admin dashboard.", issuer: "", issue_date: "", credential_url: "", image_url: "", sort_order: 0 },
+  { id: "fallback-1", title: "Add your first certificate", caption: "", linkedin_url: "", issuer: "", issue_date: "", credential_url: "", image_url: "", sort_order: 0 },
 ];

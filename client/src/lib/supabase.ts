@@ -45,6 +45,7 @@ export type CertificationRecord = {
   id?: string;
   title: string;
   caption?: string;
+  linkedin_url?: string;
   issuer: string;
   issue_date: string;
   credential_url: string;
@@ -54,7 +55,7 @@ export type CertificationRecord = {
 
 export async function fetchPortfolioCertifications(): Promise<CertificationRecord[] | null> {
   if (!supabase) return null;
-  const { data, error } = await supabase.from("portfolio_certifications").select("id,title,caption,issuer,issue_date,credential_url,image_url,sort_order").order("sort_order", { ascending: true });
+  const { data, error } = await supabase.from("portfolio_certifications").select("id,title,caption,linkedin_url,issuer,issue_date,credential_url,image_url,sort_order").order("sort_order", { ascending: true });
   if (error) { console.warn("Could not load certifications", error.message); return null; }
   return (data || []) as CertificationRecord[];
 }
