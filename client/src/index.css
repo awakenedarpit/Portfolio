@@ -244,3 +244,6 @@ button { font: inherit; }
 
 .admin-header-actions { display: flex; align-items: center; gap: 10px; }.admin-jump { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 12px; border: 1px solid rgba(126,104,242,.3); border-radius: 99px; background: rgba(126,104,242,.08); color: #6656c7; font: 9px 'DM Mono', monospace; }.admin-jump:hover { background: #7e68f2; color: #fff; }
 @media (max-width: 620px) { .admin-header-actions { align-items: flex-end; flex-direction: column; gap: 6px; }.admin-jump { min-height: 32px; } }
+
+/* Keep featured project cards content-sized; avoid empty grid-row span space */
+.project-featured:first-child { grid-row: auto; }.project-featured:first-child .project-visual { min-height: 340px; }
