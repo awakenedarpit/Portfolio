@@ -16,6 +16,7 @@ export type ProjectRecord = {
   accent: string;
   project_index: string;
   featured: boolean;
+  thumbnail_url: string;
   images?: string[];
 };
 
@@ -35,10 +36,11 @@ export async function fetchPortfolioProjects(): Promise<ProjectRecord[] | null> 
     accent: project.accent,
     project_index: project.project_index,
     featured: project.featured,
-    images: (project.portfolio_project_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((image: any) => image.image_url),
+    thumbnail_url: project.thumbnail_url || "",
+    images: [project.thumbnail_url, ...(project.portfolio_project_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((image: any) => image.image_url).filter((url: string) => url && url !== project.thumbnail_url)].filter(Boolean),
   }));
 }
 
 export function toProjectRecord(project: any): ProjectRecord {
-  return { slug: project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""), title: project.title, category: project.category, description: project.description, technologies: project.technologies, github: project.github, live: project.live, accent: project.accent, project_index: project.index, featured: project.featured, images: project.images || [] };
+  return { slug: project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""), title: project.title, category: project.category, description: project.description, technologies: project.technologies, github: project.github, live: project.live, accent: project.accent, project_index: project.index, featured: project.featured, thumbnail_url: project.thumbnail_url || project.images?.[0] || "", images: project.images || [] };
 }
