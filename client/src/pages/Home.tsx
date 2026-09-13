@@ -4,6 +4,8 @@ import {
   ArrowUpRight,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Github,
   Instagram,
   Linkedin,
@@ -160,9 +162,11 @@ function Skills() {
 }
 
 function ProjectVisual({ accent, index, images, title }: { accent: string; index: string; images?: string[]; title: string }) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
   const gallery = images || [];
-  return <div className={`project-visual visual-${accent}`}>{gallery.length ? <><button className="project-preview-button" type="button" onClick={() => setSelected(gallery[0])} aria-label={`Open ${title} preview`}><img className="project-preview-image" src={gallery[0]} alt={`${title} preview`} /></button>{gallery.length > 1 && <div className="project-preview-thumbs" aria-label={`${title} screenshots`}>{gallery.map((image, imageIndex) => <button type="button" key={image} className={imageIndex === 0 ? "active" : ""} onClick={() => setSelected(image)} aria-label={`Open ${title} screenshot ${imageIndex + 1}`}><img src={image} alt="" /></button>)}</div>}</> : <><div className="visual-grid-lines" /><div className="project-shape"><div /><div /><div /></div></>}<span className="project-index">{index}</span><span className="visual-label">{gallery.length ? `${gallery.length} PREVIEW${gallery.length > 1 ? "S" : ""}` : `PROJECT / ${index}`}</span>{selected && <div className="project-lightbox" role="dialog" aria-modal="true" aria-label={`${title} screenshot preview`} onClick={() => setSelected(null)}><button type="button" className="project-lightbox-close" onClick={() => setSelected(null)} aria-label="Close preview"><X size={22} /></button><img src={selected} alt={`${title} enlarged preview`} onClick={(event) => event.stopPropagation()} /></div>}</div>;
+  const openNext = () => setSelected((current) => current === null ? 0 : (current + 1) % gallery.length);
+  const openPrevious = () => setSelected((current) => current === null ? 0 : (current - 1 + gallery.length) % gallery.length);
+  return <div className={`project-visual visual-${accent}`}>{gallery.length ? <><button className="project-preview-button" type="button" onClick={() => setSelected(0)} aria-label={`Open ${title} preview`}><img className="project-preview-image" src={gallery[0]} alt={`${title} preview`} /><span className="project-preview-cta">View project preview <ArrowUpRight size={14} /></span></button></> : <><div className="visual-grid-lines" /><div className="project-shape"><div /><div /><div /></div></>}<span className="project-index">{index}</span><span className="visual-label">{gallery.length ? "PROJECT PREVIEW" : `PROJECT / ${index}`}</span>{selected !== null && <div className="project-lightbox" role="dialog" aria-modal="true" aria-label={`${title} screenshot gallery`} onClick={() => setSelected(null)}><div className="project-gallery-panel" onClick={(event) => event.stopPropagation()}><div className="project-gallery-top"><span>{title} / Preview gallery</span><button type="button" className="project-lightbox-close" onClick={() => setSelected(null)} aria-label="Close preview"><X size={20} /></button></div><div className="project-gallery-main"><button type="button" className="project-gallery-nav" onClick={openPrevious} aria-label="Previous screenshot"><ChevronLeft size={22} /></button><img src={gallery[selected]} alt={`${title} screenshot ${selected + 1}`} /><button type="button" className="project-gallery-nav" onClick={openNext} aria-label="Next screenshot"><ChevronRight size={22} /></button></div><div className="project-gallery-thumbs">{gallery.map((image, imageIndex) => <button type="button" key={image} className={imageIndex === selected ? "active" : ""} onClick={() => setSelected(imageIndex)} aria-label={`Show screenshot ${imageIndex + 1}`}><img src={image} alt="" /></button>)}</div><p className="project-gallery-count">{selected + 1} / {gallery.length}</p></div></div>}</div>;
 }
 
 function Projects() {
