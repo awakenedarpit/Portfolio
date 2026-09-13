@@ -17,8 +17,8 @@ import {
   Twitter,
   X,
 } from "lucide-react";
-import { focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioProjects } from "@/lib/supabase";
+import { certifications, focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
+import { fetchPortfolioProjects, supabase } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -30,11 +30,18 @@ function useProjectContent() {
   return items;
 }
 
+function useCertifications() {
+  const [items, setItems] = useState(certifications);
+  useEffect(() => { supabase?.from("portfolio_certifications").select("*").order("sort_order").then(({ data }) => { if (data?.length) setItems(data as typeof certifications); }); }, []);
+  return items;
+}
+
 const navItems = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
+  { label: "Certifications", href: "#certifications" },
   { label: "Journey", href: "#journey" },
   { label: "Contact", href: "#contact" },
 ];
@@ -188,6 +195,11 @@ function GithubCTA() {
   return <section className="github-section section-pad"><div className="container github-cta reveal"><div><Eyebrow light>08 — OPEN SOURCE / PUBLIC WORK</Eyebrow><h2>See what&apos;s<br /><em>in progress.</em></h2></div><a className="github-circle" href={social.github} target="_blank" rel="noreferrer" aria-label="Explore Arpit on GitHub"><Github size={31} /><span>Explore<br />GitHub</span><ArrowUpRight size={18} /></a><div className="github-grid-mark" aria-hidden="true" /></div></section>;
 }
 
+function Certifications() {
+  const items = useCertifications();
+  return <section id="certifications" className="section section-light section-pad certifications-section"><div className="container"><SectionHeader index="08" title="Certifications & proof of practice" copy="A growing record of the courses, programs, and milestones shaping the way I build." light /><div className="certification-list">{items.map((item, index) => <article className="certification-card reveal" key={item.id || item.title}><div className="certification-mark">0{index + 1}</div><div className="certification-copy"><p>{item.issuer}</p><h3>{item.title}</h3><span>{item.issue_date}</span></div>{item.credential_url ? <a className="certification-link" href={item.credential_url} target="_blank" rel="noreferrer">View credential <ArrowUpRight size={15} /></a> : <span className="certification-pending">Credential link coming soon</span>}</article>)}</div></div></section>;
+}
+
 function Contact() {
   return <section id="contact" className="section contact-section section-pad"><div className="container contact-grid"><div><SectionHeader index="09" title={<>Let&apos;s build something<br /><em>interesting.</em></>} copy="Have an idea, project, collaboration, or simply want to connect? The best way to start is usually a good question." /><div className="contact-availability"><span className="status-dot" />Currently open to conversations around learning, building, and creative experiments.</div></div><div className="contact-links reveal delay-2"><a className="contact-link" href={social.github} target="_blank" rel="noreferrer"><span><Github size={18} />GitHub</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.linkedin} target="_blank" rel="noreferrer"><span><Linkedin size={18} />LinkedIn</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.email}><span><Mail size={18} />Email</span><small>awakenedarpit@gmail.com</small></a><a className="contact-link" href={social.instagram} target="_blank" rel="noreferrer"><span><Instagram size={18} />Instagram</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.twitter} target="_blank" rel="noreferrer"><span><Twitter size={18} />X / Twitter</span><ArrowUpRight size={18} /></a></div></div></section>;
 }
@@ -198,5 +210,5 @@ function Footer() {
 
 export default function Home() {
   useReveal();
-  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journey /><GithubCTA /><Contact /></main><Footer /></>;
+  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journey /><Certifications /><GithubCTA /><Contact /></main><Footer /></>;
 }

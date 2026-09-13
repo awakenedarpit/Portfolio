@@ -94,3 +94,7 @@ export const journey = [
   { year: "Now", title: "BTech AI / ML", text: "Learning the fundamentals while turning curiosity into small, tangible systems." },
   { year: "Next", title: "Learn → build → iterate", text: "Keep the loop close: study deeply, make deliberately, and improve through feedback." },
 ];
+
+export const certifications = [
+  { id: "fallback-1", title: "Add your first certification", issuer: "Certificate issuer", issue_date: "2026", credential_url: "", image_url: "", sort_order: 0 },
+];
