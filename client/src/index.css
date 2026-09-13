@@ -247,3 +247,6 @@ button { font: inherit; }
 
 /* Keep featured project cards content-sized; avoid empty grid-row span space */
 .project-featured:first-child { grid-row: auto; }.project-featured:first-child .project-visual { min-height: 340px; }
+
+/* Project image edit/delete controls */
+.edit-image-button { display: inline-flex; align-items: center; justify-content: center; min-height: 22px; padding: 3px 6px; border-radius: 4px; color: #c8c3ff; cursor: pointer; font: 8px 'DM Mono', monospace; }.edit-image-button:hover { background: rgba(126,104,242,.32); color: #fff; }.edit-image-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }.admin-thumb-actions .delete-image-button { color: #ffb0a0 !important; }
