@@ -116,3 +116,12 @@ Do not ask Arpit to repeat repository context unless the task materially changes
 
 ## Editable showcase section
 The public Hackathons section is backed by `portfolio_hackathons` when the Supabase migration `supabase/migrations/20260914000000_create_portfolio_hackathons.sql` has been applied. Each row is tappable and expands an editable long description. The authenticated admin dashboard includes a Short loops / Big energy editor for adding, editing, reordering, and deleting rows. The public page falls back to the three seeded showcase records if the table is unavailable.
+
+## Section dashboard update — 2026-09-14
+The authenticated `/admin` workspace now has a section-based dashboard map above the existing editors. It covers Overview, Identity & About, Skills, Projects, Hackathons, Journey, Certifications, and Contact & Links. Each route card shows whether the area is `LIVE` (Supabase-backed) or `SOURCE` (centralized in `client/src/data/content.ts`), and clicking a card scrolls to the corresponding panel/editor.
+
+The Overview panel reports project, gallery, live-area, and public-part counts from the loaded project records. Projects and Hackathons remain the live editable database-backed areas. Identity/About, Skills, Journey, Certifications, and Contact currently use source-backed panels with explicit messaging rather than pretending to persist changes; Certifications remains intentionally simple (certificate name + LinkedIn URL) until its dedicated editor panel is expanded.
+
+Dashboard styling is appended to `client/src/index.css` with responsive route cards, metrics, source panels, and a left navigation rail on desktop that collapses to a full-width route bar on mobile. No server files or schema were changed.
+
+Validation completed after `pnpm install --frozen-lockfile`: `pnpm run check` passed and `pnpm run build` passed. Build output retained the existing large-chunk warning profile only if encountered; no new errors were introduced.
