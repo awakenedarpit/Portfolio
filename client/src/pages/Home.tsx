@@ -108,12 +108,6 @@ function Navbar() {
     navItems.forEach(({ href }) => { const node = document.querySelector(href); if (node) observer.observe(node); });
     return () => { window.removeEventListener("scroll", onScroll); observer.disconnect(); };
   }, []);
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
-    window.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { window.removeEventListener("keydown", onKeyDown); document.body.style.overflow = ""; };
-  }, [open]);
   return (
     <header className={`site-nav ${scrolled ? "nav-scrolled" : ""}`}>
       <a className="wordmark" href="#home" aria-label="Arpit home"><span>AR</span>PIT<span className="wordmark-dot">·</span></a>
@@ -122,7 +116,7 @@ function Navbar() {
       </nav>
       <a className="nav-contact" href="#contact">Let&apos;s talk <ArrowUpRight size={14} /></a>
       <button className="menu-button" aria-label={open ? "Close navigation" : "Open navigation"} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button>
-      <nav className={`mobile-nav ${open ? "is-open" : ""}`} aria-label="Mobile navigation" aria-hidden={!open}>{navItems.map((item) => <a tabIndex={open ? 0 : -1} key={item.href} className={active === item.href.slice(1) ? "active" : ""} href={item.href} onClick={() => setOpen(false)}>{item.label}<ArrowUpRight size={16} /></a>)}</nav>
+      {open && <nav className="mobile-nav" aria-label="Mobile navigation">{navItems.map((item) => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}<ArrowUpRight size={16} /></a>)}</nav>}
     </header>
   );
 }
