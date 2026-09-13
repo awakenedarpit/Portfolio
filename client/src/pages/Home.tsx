@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { certifications, focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioProjects, supabase } from "@/lib/supabase";
+import { fetchPortfolioCertifications, fetchPortfolioProjects } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -32,7 +32,7 @@ function useProjectContent() {
 
 function useCertifications() {
   const [items, setItems] = useState(certifications);
-  useEffect(() => { supabase?.from("portfolio_certifications").select("*").order("sort_order").then(({ data }) => { if (data?.length) setItems(data as typeof certifications); }); }, []);
+  useEffect(() => { fetchPortfolioCertifications().then((remote) => { if (remote?.length) setItems(remote as typeof certifications); }); }, []);
   return items;
 }
 

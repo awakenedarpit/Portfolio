@@ -41,6 +41,23 @@ export async function fetchPortfolioProjects(): Promise<ProjectRecord[] | null> 
   }));
 }
 
+export type CertificationRecord = {
+  id?: string;
+  title: string;
+  issuer: string;
+  issue_date: string;
+  credential_url: string;
+  image_url: string;
+  sort_order: number;
+};
+
+export async function fetchPortfolioCertifications(): Promise<CertificationRecord[] | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.from("portfolio_certifications").select("id,title,issuer,issue_date,credential_url,image_url,sort_order").order("sort_order", { ascending: true });
+  if (error) { console.warn("Could not load certifications", error.message); return null; }
+  return (data || []) as CertificationRecord[];
+}
+
 export function toProjectRecord(project: any): ProjectRecord {
   return { slug: project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""), title: project.title, category: project.category, description: project.description, technologies: project.technologies, github: project.github, live: project.live, accent: project.accent, project_index: project.index, featured: project.featured, thumbnail_url: project.thumbnail_url || project.images?.[0] || "", images: project.images || [] };
 }
