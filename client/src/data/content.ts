@@ -96,5 +96,5 @@ export const journey = [
 ];
 
 export const certifications = [
-  { id: "fallback-1", title: "Add your first certification", issuer: "Certificate issuer", issue_date: "2026", credential_url: "", image_url: "", sort_order: 0 },
+  { id: "fallback-1", title: "Add your first certification", caption: "Upload a proof photo and add its caption from the admin dashboard.", issuer: "", issue_date: "", credential_url: "", image_url: "", sort_order: 0 },
 ];
