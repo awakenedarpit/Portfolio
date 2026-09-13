@@ -58,8 +58,7 @@ export default function Admin() {
   }
   async function setThumbnail(index: number, image: string) {
     if (!supabase || !items[index].id) return;
-    const reordered = [image, ...(items[index].images || []).filter((item) => item !== image)];
-    update(index, { thumbnail_url: image, images: reordered });
+    update(index, { thumbnail_url: image });
     const { error } = await supabase.from("portfolio_projects").update({ thumbnail_url: image, updated_at: new Date().toISOString() }).eq("id", items[index].id);
     if (error) setMessage(`Could not set main thumbnail: ${error.message}`); else setMessage("Main thumbnail saved. It is now the public project preview.");
   }
@@ -69,8 +68,14 @@ export default function Admin() {
     const current = [...(items[index].images || [])]; const to = from + direction;
     if (to < 0 || to >= current.length) return;
     [current[from], current[to]] = [current[to], current[from]]; update(index, { images: current });
-    await Promise.all(current.map((image_url, sort_order) => client.from("portfolio_project_images").update({ sort_order }).eq("project_id", items[index].id).eq("image_url", image_url)));
-    setMessage("Gallery order saved.");
+    setMessage("Saving gallery order…");
+    const projectId = items[index].id;
+    const temporary = await Promise.all(current.map((image_url, position) => client.from("portfolio_project_images").update({ sort_order: 1000 + position }).eq("project_id", projectId).eq("image_url", image_url)));
+    const temporaryError = temporary.find((result) => result.error)?.error;
+    if (temporaryError) { setMessage(`Could not reorder images: ${temporaryError.message}`); return; }
+    const saved = await Promise.all(current.map((image_url, sort_order) => client.from("portfolio_project_images").update({ sort_order }).eq("project_id", projectId).eq("image_url", image_url)));
+    const savedError = saved.find((result) => result.error)?.error;
+    setMessage(savedError ? `Could not save gallery order: ${savedError.message}` : "Gallery order saved.");
   }
   async function removeImage(index: number, imageIndex: number) {
     if (!supabase || !items[index].id) return; const image = items[index].images?.[imageIndex];
