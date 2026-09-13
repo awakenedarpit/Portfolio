@@ -157,3 +157,7 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
 
 .project-demo-pending { color: #777582; font: 10px 'DM Mono', monospace; white-space: nowrap; }
+
+.project-links { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 20px; }
+.project-demo-pending { color: #777582; font: 10px 'DM Mono', monospace; white-space: nowrap; }
+@media (max-width: 580px) { .project-links { justify-content: flex-start; gap: 14px; } }
