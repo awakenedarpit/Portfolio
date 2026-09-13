@@ -1,38 +1,115 @@
 # MEMORY.md
 
-## Identity
+## Project identity
 
-Arpit is presented as a **BTech AI/ML Student · Developer · Builder** exploring the intersection of AI, code, and creative digital experiences.
+This repository is the public portfolio for **Arpit Raj**, a BTech AI/ML student, developer, and builder exploring the intersection of AI, code, and creative digital experiences.
 
-## Current architecture
+Repository: `https://github.com/awakenedarpit/Portfolio`
+Working directory: `/home/ubuntu/Portfolio`
+Branch: `main`
+Latest commit at handoff: `750bac0 Improve certificate editor visibility`
 
-The app is a static Vite + React + TypeScript site. `Home.tsx` contains the single-page portfolio sections and small reusable components. `data/content.ts` is the source of truth for all portfolio content. `index.css` is the source of truth for the visual system and responsive behavior.
+## Stack and architecture
 
-## Visual direction
+The app is a static React 19 + TypeScript + Vite frontend using Tailwind 4, Lucide icons, Supabase JS, and a custom CSS design system in `client/src/index.css`. The public page is assembled in `client/src/pages/Home.tsx`. The authenticated editor is in `client/src/pages/Admin.tsx`. Supabase helpers and types live in `client/src/lib/supabase.ts`. Centralized fallback content is in `client/src/data/content.ts`.
 
-The site uses a premium dark editorial direction inspired by modern creative-tech portfolios without cloning any reference. It combines deep navy, charcoal, violet, peach, mint, and lavender with Space Grotesk, Manrope, and DM Mono. The hero uses an original CSS orbital system rather than an external image or 3D dependency.
+The `server/` directory is template infrastructure and should not be modified for frontend work. Large media assets should not be added to `client/public`; project media uses Supabase Storage.
 
-## Motion decisions
+## Visual direction and motion
 
-IntersectionObserver drives lightweight reveal animations. The hero visual has pointer-reactive parallax. Navigation becomes translucent and blurred after scroll; a scroll progress line stays at the top. A subtle custom cursor is desktop-only. `prefers-reduced-motion` makes the page effectively static.
+The public site uses a premium dark editorial creative-tech direction with deep navy, charcoal, violet, peach, mint, and lavender. Typography blends Space Grotesk, Manrope, and DM Mono. The hero uses a CSS orbital system, not an external 3D dependency. IntersectionObserver powers reveal animations, the hero has pointer-reactive parallax, navigation becomes translucent after scroll, and a desktop-only custom cursor is present. Reduced-motion preferences are respected.
 
-## Content state
+## Local preview
 
-The public GitHub profile URL is `https://github.com/awakenedarpit`. The named project concepts in the brief (Campus Grid, Prism, Vox, and COSMOS) are represented as explicitly editable entries because the configured GitHub API returned 404 for the requested account during this build. Their descriptions do not claim unverified outcomes. LinkedIn and email remain visible TODO placeholders because no real values were available.
+The development server normally runs on port `4173` bound to `0.0.0.0`:
 
-## Deployment
+- Public preview: https://4173-iq2pyq8c40n2xneop0yna-6ef0d6bb.sg2.manus.computer/
+- Admin preview: https://4173-iq2pyq8c40n2xneop0yna-6ef0d6bb.sg2.manus.computer/admin
+- Local URL: `http://localhost:4173/`
 
-The scaffold is Vercel-ready and requires no environment variables. Run `pnpm run build`, then import the repository into Vercel with the default Vite settings.
+The preview process may stop between sessions. Restart with:
 
-## Known limitations
+```bash
+cd /home/ubuntu/Portfolio
+pnpm dev --host 0.0.0.0 --port 4173
+```
 
-Project links currently point to the GitHub profile rather than unverified individual repositories. No contact form is implemented; the page provides GitHub and clearly marked placeholders for LinkedIn and email.
+Verify both routes with `curl -I http://127.0.0.1:4173/` and `curl -I http://127.0.0.1:4173/admin`.
 
-## Future ideas
+## Supabase configuration
 
-Replace the editable project entries with confirmed repository URLs and screenshots, add verified LinkedIn/email links, and optionally add a small static Open Graph image once the personal brand mark is final.
+Local environment is in `/home/ubuntu/Portfolio/.env.local` and uses the active Supabase project `toqxzvwdrlcnziehrpcz.supabase.co`. The browser client uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
-## Pending user decisions
+Tables:
 
-- Confirm project descriptions, repository URLs, live demo URLs, and imagery.
-- Supply LinkedIn URL and preferred email address.
+- `portfolio_projects`
+- `portfolio_project_images`
+- `portfolio_certifications`
+
+Storage bucket:
+
+- `project-images`
+
+Project images use `project-images/{project-slug}/...`. Legacy certification proof images may exist under `project-images/certifications/{certification-id}/...`, but the current certification UI intentionally does not use photos.
+
+The certifications table has legacy columns (`caption`, `issuer`, `issue_date`, `credential_url`, `image_url`) and the current `linkedin_url` column. Public access was fixed with:
+
+```sql
+grant usage on schema public to anon, authenticated;
+grant select on public.portfolio_certifications to anon, authenticated;
+create policy portfolio_certifications_public_read on public.portfolio_certifications for select to anon, authenticated using (true);
+```
+
+## Current public page
+
+`Home.tsx` includes the fixed responsive navigation, hero, About, Currently Building, Skills, Projects, Hackathons, Journey, Certifications, GitHub CTA, Contact, and Footer sections.
+
+Projects have a full preview gallery rendered through a portal so it is not clipped by card overflow. The gallery supports selected main thumbnail, thumbnail navigation, previous/next controls, and a full-screen preview panel.
+
+The public Certifications section is intentionally simplified: each row displays the certificate name and a right-aligned **View this certificate on LinkedIn** button. It loads current rows with `fetchPortfolioCertifications()` in `client/src/lib/supabase.ts`, selecting `id,title,caption,linkedin_url,issuer,issue_date,credential_url,image_url,sort_order` and ordering by `sort_order`.
+
+## Current admin workflow
+
+The admin dashboard is Supabase-authenticated. If `/admin` shows the login screen, the authenticated editor is not mounted until the user signs in. After sign-in, a visible **Certifications** shortcut in the header links to the `#certifications` editor anchor.
+
+The current desired certification workflow is:
+
+- Click **Add certificate**
+- Enter **Certificate name**
+- Enter **LinkedIn certificate URL**
+- Click **Save**
+- Optionally reorder or delete certificates
+
+The public site then shows the name and LinkedIn button. Do not reintroduce photo upload or caption fields unless Arpit explicitly requests that again.
+
+Project gallery admin controls support upload, set main thumbnail, reorder, and delete. Main thumbnail is stored in `portfolio_projects.thumbnail_url`. Image order is stored in `portfolio_project_images.sort_order`. Reordering uses temporary positions before final positions to avoid concurrent sort-order collisions.
+
+## Validation workflow
+
+Run after meaningful frontend changes:
+
+```bash
+cd /home/ubuntu/Portfolio
+pnpm run check
+pnpm run build
+```
+
+Both passed at the latest completed implementation. The build may warn that a JavaScript chunk is larger than 500 kB; this is only a warning.
+
+After changes, verify both preview routes, commit to `main`, and push to GitHub. Keep edits focused and do not touch `server/`.
+
+## Recent commits
+
+- `1147323` — Simplify certifications to LinkedIn links
+- `1dde25c` — Polish certificate editor UI
+- `750bac0` — Improve certificate editor visibility
+
+Note: the working tree may include later uncommitted or newly applied changes after this memory snapshot. Always run `git status` at handoff start and update this file after committing the next meaningful change.
+
+## Handoff notes
+
+Arpit may switch AI/Manus sessions. Start by reading this file, checking `git status`, and verifying the port-4173 preview. The most recent user direction is to keep Certifications very simple: certificate name plus LinkedIn URL only, with a polished admin editor and a simple public row.
+
+If a certification is not visible publicly, test the Supabase REST endpoint with the public anon key before changing UI code. The endpoint should return rows from `portfolio_certifications`; if it returns an empty array, inspect grants and the public read policy.
+
+Do not ask Arpit to repeat repository context unless the task materially changes scope. Maintain this file after meaningful architecture, schema, workflow, or deployment changes.
