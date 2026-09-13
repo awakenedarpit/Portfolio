@@ -84,9 +84,9 @@ export const focusAreas = [
 ];
 
 export const hackathons = [
-  { number: "01", title: "Quantum Flow", project: "Focus, habits, momentum", detail: "A productivity system built for daily progress", color: "violet" },
-  { number: "02", title: "COSMOS", project: "Academic command center", detail: "An offline-first operating system for learning", color: "blue" },
-  { number: "03", title: "VOX", project: "Interruptible AI voice", detail: "A prototype focused on recovery and control", color: "mint" },
+  { number: "01", title: "Quantum Flow", project: "Focus, habits, momentum", detail: "A productivity system built for daily progress", description: "Quantum Flow is a mobile-first personal productivity system for habits, goals, study planning, focus sessions, quotes, and progress tracking, with local persistence and a PWA foundation.", color: "violet" },
+  { number: "02", title: "COSMOS", project: "Academic command center", detail: "An offline-first operating system for learning", description: "COSMOS is an offline-first academic command center for schedules, tasks, syllabus progress, study sessions, goals, roadmaps, analytics, and reflection.", color: "blue" },
+  { number: "03", title: "VOX", project: "Interruptible AI voice", detail: "A prototype focused on recovery and control", description: "VOX is an interruptible real-time AI voice assistant prototype focused on interruption and recovery across speech recognition, AI responses, and voice output.", color: "mint" },
 ];
 
 export const journey = [

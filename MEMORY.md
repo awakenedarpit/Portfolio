@@ -113,3 +113,6 @@ Arpit may switch AI/Manus sessions. Start by reading this file, checking `git st
 If a certification is not visible publicly, test the Supabase REST endpoint with the public anon key before changing UI code. The endpoint should return rows from `portfolio_certifications`; if it returns an empty array, inspect grants and the public read policy.
 
 Do not ask Arpit to repeat repository context unless the task materially changes scope. Maintain this file after meaningful architecture, schema, workflow, or deployment changes.
+
+## Editable showcase section
+The public Hackathons section is backed by `portfolio_hackathons` when the Supabase migration `supabase/migrations/20260914000000_create_portfolio_hackathons.sql` has been applied. Each row is tappable and expands an editable long description. The authenticated admin dashboard includes a Short loops / Big energy editor for adding, editing, reordering, and deleting rows. The public page falls back to the three seeded showcase records if the table is unavailable.

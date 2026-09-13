@@ -17,8 +17,8 @@ import {
   Twitter,
   X,
 } from "lucide-react";
-import { focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioProjects } from "@/lib/supabase";
+import { focusAreas, journey, projects, skillGroups, social } from "@/data/content";
+import { fetchPortfolioHackathons, fetchPortfolioProjects, getFallbackHackathons } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -26,6 +26,14 @@ function useProjectContent() {
   useEffect(() => {
     fetchPortfolioProjects().then((remote) => { if (remote?.length) setItems(remote.map((project) => ({ ...project, index: project.project_index })) as typeof projects); }).catch(() => { /* keep defaults */ });
     try { const saved = localStorage.getItem(PROJECT_STORAGE_KEY); if (saved) setItems(JSON.parse(saved)); } catch { /* keep defaults */ }
+  }, []);
+  return items;
+}
+
+function useHackathonContent() {
+  const [items, setItems] = useState(getFallbackHackathons());
+  useEffect(() => {
+    fetchPortfolioHackathons().then((remote) => { if (remote?.length) setItems(remote); }).catch(() => { /* keep defaults */ });
   }, []);
   return items;
 }
@@ -178,7 +186,9 @@ function Projects() {
 }
 
 function Hackathons() {
-  return <section id="hackathons" className="section section-light section-pad"><div className="container"><SectionHeader index="06" title="Short loops. Big energy." copy="Hackathons are where the distance between a thought and a prototype gets delightfully small." light /><div className="hackathon-list">{hackathons.map((item, i) => <article className="hackathon-row reveal" key={item.number}><div className={`hackathon-mark mark-${item.color}`}><span>{item.number}</span><span className="mark-line" /></div><div className="hackathon-main"><p>{item.title}</p><h3>{item.project}</h3></div><p className="hackathon-detail">{item.detail}</p><ArrowUpRight size={19} /></article>)}</div></div></section>;
+  const items = useHackathonContent();
+  const [open, setOpen] = useState<string | null>(null);
+  return <section id="hackathons" className="section section-light section-pad"><div className="container"><SectionHeader index="06" title="Short loops. Big energy." copy="Hackathons are where the distance between a thought and a prototype gets delightfully small." light /><div className="hackathon-list">{items.map((item) => { const isOpen = open === item.number; return <article className={`hackathon-row reveal ${isOpen ? "is-open" : ""}`} key={item.id || item.number}><button type="button" className="hackathon-trigger" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : item.number)}><div className={`hackathon-mark mark-${item.color}`}><span>{item.number}</span><span className="mark-line" /></div><div className="hackathon-main"><p>{item.title}</p><h3>{item.project}</h3></div><p className="hackathon-detail">{item.detail}</p><ArrowUpRight size={19} className="hackathon-arrow" /></button>{isOpen && <div className="hackathon-description"><span>ABOUT THIS BUILD</span><p>{item.description || item.detail}</p></div>}</article>; })}</div></div></section>;
 }
 
 function Journey() {
