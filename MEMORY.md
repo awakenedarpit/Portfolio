@@ -125,3 +125,18 @@ The Overview panel reports project, gallery, live-area, and public-part counts f
 Dashboard styling is appended to `client/src/index.css` with responsive route cards, metrics, source panels, and a left navigation rail on desktop that collapses to a full-width route bar on mobile. No server files or schema were changed.
 
 Validation completed after `pnpm install --frozen-lockfile`: `pnpm run check` passed and `pnpm run build` passed. Build output retained the existing large-chunk warning profile only if encountered; no new errors were introduced.
+
+## Admin access configuration — 2026-09-14
+The local preview now has `.env.local` configured with the active healthy Supabase project `godiwrggiyjvurncfdsm` and its browser-safe publishable key. The Vite server was restarted and `/admin` returned HTTP 200. Admin access remains Supabase Auth protected: use **Create first admin account** on the login screen with the owner’s email/password, confirm the email if Supabase requires it, then sign in. Do not commit `.env.local` or credentials.
+
+## Handoff for next review — 2026-09-14
+Live preview links:
+
+- Portfolio: https://4173-iyd76sq6faeregy16excn-1279bbd6.sg2.manus.computer/
+- Admin: https://4173-iyd76sq6faeregy16excn-1279bbd6.sg2.manus.computer/admin
+
+Both routes were verified with HTTP 200. The local preview uses Supabase Auth through `.env.local`, which is intentionally untracked and must never be committed. To access the admin dashboard, use **Create first admin account** on `/admin`, register an owner email/password, confirm the email if required, then sign in.
+
+Current dashboard state: Overview metrics and section routing are implemented for Identity & About, Skills, Projects, Hackathons, Journey, Certifications, and Contact & Links. Projects and Hackathons are database-backed editors. The other sections are clearly marked source-backed and currently point to `client/src/data/content.ts`; the Certifications workflow remains intentionally limited to certificate name plus LinkedIn URL. Latest pushed commit: `6a25ca7` (`Add section-based portfolio admin dashboard`).
+
+Next review checklist: sign into `/admin`, test the section route cards, confirm Projects gallery editing, confirm Hackathons editing, and decide which source-backed section should receive the next database-backed editor.
