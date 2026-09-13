@@ -5,11 +5,13 @@ import {
   Check,
   ChevronDown,
   Github,
+  Instagram,
   Linkedin,
   Mail,
   Menu,
   MoveUpRight,
   Sparkles,
+  Twitter,
   X,
 } from "lucide-react";
 import { focusAreas, hackathons, journey, projects, skillGroups, social } from "@/data/content";
@@ -167,11 +169,11 @@ function GithubCTA() {
 }
 
 function Contact() {
-  return <section id="contact" className="section contact-section section-pad"><div className="container contact-grid"><div><SectionHeader index="09" title={<>Let&apos;s build something<br /><em>interesting.</em></>} copy="Have an idea, project, collaboration, or simply want to connect? The best way to start is usually a good question." /><div className="contact-availability"><span className="status-dot" />Currently open to conversations around learning, building, and creative experiments.</div></div><div className="contact-links reveal delay-2"><a className="contact-link" href={social.github} target="_blank" rel="noreferrer"><span><Github size={18} />GitHub</span><ArrowUpRight size={18} /></a><div className="contact-link disabled"><span><Linkedin size={18} />LinkedIn</span><small>TODO: add URL</small></div><div className="contact-link disabled"><span><Mail size={18} />Email</span><small>TODO: add address</small></div></div></div></section>;
+  return <section id="contact" className="section contact-section section-pad"><div className="container contact-grid"><div><SectionHeader index="09" title={<>Let&apos;s build something<br /><em>interesting.</em></>} copy="Have an idea, project, collaboration, or simply want to connect? The best way to start is usually a good question." /><div className="contact-availability"><span className="status-dot" />Currently open to conversations around learning, building, and creative experiments.</div></div><div className="contact-links reveal delay-2"><a className="contact-link" href={social.github} target="_blank" rel="noreferrer"><span><Github size={18} />GitHub</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.linkedin} target="_blank" rel="noreferrer"><span><Linkedin size={18} />LinkedIn</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.email}><span><Mail size={18} />Email</span><small>awakenedarpit@gmail.com</small></a><a className="contact-link" href={social.instagram} target="_blank" rel="noreferrer"><span><Instagram size={18} />Instagram</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.twitter} target="_blank" rel="noreferrer"><span><Twitter size={18} />X / Twitter</span><ArrowUpRight size={18} /></a></div></div></section>;
 }
 
 function Footer() {
-  return <footer className="footer"><div className="container footer-top"><a className="wordmark footer-mark" href="#home">AR<span>PIT</span><b>·</b></a><p>AI/ML Student<br />Developer · Builder</p><div className="footer-links"><a href={social.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13} /></a><span>LinkedIn — TODO</span></div></div><div className="container footer-bottom"><span>© 2026 Arpit</span><span>Made with curiosity &amp; code</span><a href="#home">Back to top <ChevronDown size={14} className="rotate-up" /></a></div></footer>;
+  return <footer className="footer"><div className="container footer-top"><a className="wordmark footer-mark" href="#home">AR<span>PIT</span><b>·</b></a><p>AI/ML Student<br />Developer · Builder</p><div className="footer-links"><a href={social.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13} /></a><a href={social.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={13} /></a><a href={social.instagram} target="_blank" rel="noreferrer">Instagram <ArrowUpRight size={13} /></a><a href={social.twitter} target="_blank" rel="noreferrer">X / Twitter <ArrowUpRight size={13} /></a><a href={social.email}>Email <ArrowUpRight size={13} /></a></div></div><div className="container footer-bottom"><span>© 2026 Arpit</span><span>Made with curiosity &amp; code</span><a href="#home">Back to top <ChevronDown size={14} className="rotate-up" /></a></div></footer>;
 }
 
 export default function Home() {

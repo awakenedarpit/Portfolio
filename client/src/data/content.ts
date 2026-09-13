@@ -2,6 +2,8 @@ export const social = {
   github: "https://github.com/awakenedarpit",
   linkedin: "https://www.linkedin.com/in/awakenedarpit/",
   email: "mailto:awakenedarpit@gmail.com",
+  instagram: "https://www.instagram.com/awakenedarpit/",
+  twitter: "https://x.com/awakenedarpit",
 };
 
 export const projects = [
