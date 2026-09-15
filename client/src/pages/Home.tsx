@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { focusAreas, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioHackathons, fetchPortfolioProjects, getFallbackHackathons } from "@/lib/supabase";
+import { fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -38,12 +38,19 @@ function useHackathonContent() {
   return items;
 }
 
+function useJournalContent() {
+  const [items, setItems] = useState(getFallbackJournal());
+  useEffect(() => { fetchPortfolioJournal().then((remote) => { if (remote?.length) setItems(remote); }).catch(() => { /* keep defaults */ }); }, []);
+  return items;
+}
+
 
 const navItems = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
+  { label: "Journal", href: "#journal" },
   { label: "Journey", href: "#journey" },
   { label: "Contact", href: "#contact" },
 ];
@@ -195,6 +202,12 @@ function Journey() {
   return <section id="journey" className="section section-violet section-pad"><div className="container"><SectionHeader index="07" title="The journey is the project" copy="No finish line yet. Just a useful direction and a habit of showing up." /><div className="journey-list">{journey.map((item, i) => <article className="journey-item reveal" key={item.year}><div className="journey-year">{item.year}</div><div className="journey-point"><span /><div /></div><div><h3>{item.title}</h3><p>{item.text}</p></div><span className="journey-number">0{i + 1}</span></article>)}</div></div></section>;
 }
 
+function Journal() {
+  const items = useJournalContent();
+  const [open, setOpen] = useState<string | null>(null);
+  return <section id="journal" className="section section-light section-pad"><div className="container"><SectionHeader index="07" title="Journal / field notes" copy="Small observations from the workbench: what I am learning, testing, and making sense of." light /><div className="hackathon-list">{items.map((item, index) => { const key = item.id || item.title + "-" + index; const isOpen = open === key; return <article className={isOpen ? "hackathon-row is-open" : "hackathon-row"} key={key}><button type="button" className="hackathon-trigger" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : key)}><div className="hackathon-mark mark-violet"><span>{String(index + 1).padStart(2, "0")}</span><span className="mark-line" /></div><div className="hackathon-main"><p>{item.published_at}</p><h3>{item.title}</h3></div><p className="hackathon-detail">{item.read_time} · {(item.tags || []).join(" / ")}</p><ArrowUpRight size={19} className="hackathon-arrow" /></button>{isOpen && <div className="hackathon-description"><span>{item.excerpt}</span><p>{item.body}</p></div>}</article>; })}</div></div></section>;
+}
+
 function GithubCTA() {
   return <section className="github-section section-pad"><div className="container github-cta reveal"><div><Eyebrow light>08 — OPEN SOURCE / PUBLIC WORK</Eyebrow><h2>See what&apos;s<br /><em>in progress.</em></h2></div><a className="github-circle" href={social.github} target="_blank" rel="noreferrer" aria-label="Explore Arpit on GitHub"><Github size={31} /><span>Explore<br />GitHub</span><ArrowUpRight size={18} /></a><div className="github-grid-mark" aria-hidden="true" /></div></section>;
 }
@@ -209,5 +222,5 @@ function Footer() {
 
 export default function Home() {
   useReveal();
-  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journey /><GithubCTA /><Contact /></main><Footer /></>;
+  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journal /><Journey /><GithubCTA /><Contact /></main><Footer /></>;
 }

@@ -52,6 +52,25 @@ export type HackathonRecord = {
   sort_order: number;
 };
 
+export type JournalRecord = {
+  id?: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  published_at: string;
+  read_time: string;
+  tags: string[];
+  featured: boolean;
+  sort_order: number;
+};
+
+export async function fetchPortfolioJournal(): Promise<JournalRecord[] | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.from("portfolio_journal").select("*").order("sort_order", { ascending: true });
+  if (error) { console.warn("Could not load journal", error.message); return null; }
+  return (data || []) as JournalRecord[];
+}
+
 export async function fetchPortfolioHackathons(): Promise<HackathonRecord[] | null> {
   if (!supabase) return null;
   const { data, error } = await supabase.from("portfolio_hackathons").select("id,number,title,project,detail,description,color,sort_order").order("sort_order", { ascending: true });
@@ -90,5 +109,11 @@ export function getFallbackHackathons(): HackathonRecord[] {
     { number: "01", title: "Quantum Flow", project: "Focus, habits, momentum", detail: "A productivity system built for daily progress", description: "Quantum Flow is a mobile-first personal productivity system for habits, goals, study planning, focus sessions, quotes, and progress tracking, with local persistence and a PWA foundation.", color: "violet", sort_order: 0 },
     { number: "02", title: "COSMOS", project: "Academic command center", detail: "An offline-first operating system for learning", description: "COSMOS is an offline-first academic command center for schedules, tasks, syllabus progress, study sessions, goals, roadmaps, analytics, and reflection.", color: "blue", sort_order: 1 },
     { number: "03", title: "VOX", project: "Interruptible AI voice", detail: "A prototype focused on recovery and control", description: "VOX is an interruptible real-time AI voice assistant prototype focused on interruption and recovery across speech recognition, AI responses, and voice output.", color: "mint", sort_order: 2 },
+  ];
+}
+
+export function getFallbackJournal(): JournalRecord[] {
+  return [
+    { title: "Building in public, one experiment at a time", excerpt: "Notes on learning, shipping, and keeping the loop close.", body: "This is a place for longer notes about the ideas behind the work.", published_at: "2026-01-01", read_time: "3 min read", tags: ["Building", "Learning"], featured: true, sort_order: 0 },
   ];
 }
