@@ -18,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { certifications as defaultCertifications, focusAreas, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, fetchPortfolioSiteContent, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
+import { fetchPortfolioCertifications, fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, fetchPortfolioSiteContent, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -47,7 +47,7 @@ function useJournalContent() {
 
 function useLiveSiteContent() {
   const [content, setContent] = useState<Record<string, any>>({});
-  useEffect(() => { fetchPortfolioSiteContent().then((remote) => { if (remote) setContent({ ...remote, identity: { ...remote.identity }, skills: { ...(remote.skills || {}), groups: [...(remote.skills?.groups || []), ...skillGroups.filter((group) => !(remote.skills?.groups || []).some((current: any) => current.title === group.title))] }, journey: { ...(remote.journey || {}), entries: [...(remote.journey?.entries || []), ...journey.filter((entry) => !(remote.journey?.entries || []).some((current: any) => current.title === entry.title))] }, contact: { ...social, ...(remote.contact || {}) } }); }).catch(() => { /* keep source fallbacks */ }); }, []);
+  useEffect(() => { Promise.all([fetchPortfolioSiteContent(), fetchPortfolioCertifications()]).then(([remote, legacyCertifications]) => { if (remote) { const legacy = (legacyCertifications || []).map((cert: any) => ({ title: cert.title, issuer: cert.issuer || "", issue_date: cert.issue_date || "", credential_url: cert.credential_url || "", caption: cert.caption || "" })); setContent({ ...remote, identity: { ...remote.identity }, skills: { ...(remote.skills || {}), groups: [...(remote.skills?.groups || []), ...skillGroups.filter((group) => !(remote.skills?.groups || []).some((current: any) => current.title === group.title))] }, journey: { ...(remote.journey || {}), entries: [...(remote.journey?.entries || []), ...journey.filter((entry) => !(remote.journey?.entries || []).some((current: any) => current.title === entry.title))] }, certifications: { ...(remote.certifications || {}), entries: [...legacy, ...(remote.certifications?.entries || []).filter((entry: any) => !legacy.some((current: any) => current.title === entry.title))] }, contact: { ...social, ...(remote.contact || {}) } }); } }).catch(() => { /* keep source fallbacks */ }); }, []);
   return content;
 }
 
