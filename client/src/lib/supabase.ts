@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const publicSupabaseUrl = "https://toqxzvwdrlcnziehrpcz.supabase.co";
+const publicSupabaseAnonKey = "sb_publishable_pXjsTrvwzlCMBp50lcWSLg_0hekxxWi";
+export const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || publicSupabaseUrl) as string;
+export const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || publicSupabaseAnonKey) as string;
 export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 export type ProjectRecord = {
