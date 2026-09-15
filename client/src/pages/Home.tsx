@@ -47,7 +47,7 @@ function useJournalContent() {
 
 function useLiveSiteContent() {
   const [content, setContent] = useState<Record<string, any>>({});
-  useEffect(() => { fetchPortfolioSiteContent().then((remote) => { if (remote) setContent(remote); }).catch(() => { /* keep source fallbacks */ }); }, []);
+  useEffect(() => { fetchPortfolioSiteContent().then((remote) => { if (remote) setContent({ ...remote, identity: { ...remote.identity }, skills: { ...(remote.skills || {}), groups: [...(remote.skills?.groups || []), ...skillGroups.filter((group) => !(remote.skills?.groups || []).some((current: any) => current.title === group.title))] }, journey: { ...(remote.journey || {}), entries: [...(remote.journey?.entries || []), ...journey.filter((entry) => !(remote.journey?.entries || []).some((current: any) => current.title === entry.title))] }, contact: { ...social, ...(remote.contact || {}) } }); }).catch(() => { /* keep source fallbacks */ }); }, []);
   return content;
 }
 
