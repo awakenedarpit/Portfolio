@@ -64,6 +64,25 @@ export type JournalRecord = {
   sort_order: number;
 };
 
+export type SiteContentRecord = { key: string; label: string; value: string };
+
+export async function fetchPortfolioSiteContent(): Promise<Record<string, any> | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.from("portfolio_site_content").select("key,value");
+  if (error) { console.warn("Could not load live site content", error.message); return null; }
+  return Object.fromEntries((data || []).map((item: any) => [item.key, item.value]));
+}
+
+export function getFallbackSiteContent(): SiteContentRecord[] {
+  return [
+    { key: "identity", label: "Identity & About", value: JSON.stringify({ hero: "Building ideas into experiences.", bio: "I am Arpit Raj — a BTech AI/ML student, developer, and builder.", tags: ["AI/ML", "Development", "Learning", "Building"] }, null, 2) },
+    { key: "skills", label: "Skills", value: JSON.stringify({ groups: [{ label: "01", title: "Programming", items: ["Python", "C", "C++", "JavaScript", "TypeScript"] }] }, null, 2) },
+    { key: "journey", label: "Journey", value: JSON.stringify({ entries: [{ year: "2025", title: "Building & experimenting", text: "Trying ideas in public." }, { year: "Now", title: "BTech AI / ML", text: "Learning fundamentals and building systems." }] }, null, 2) },
+    { key: "certifications", label: "Certifications", value: JSON.stringify({ entries: [] }, null, 2) },
+    { key: "contact", label: "Contact & Links", value: JSON.stringify({ github: "https://github.com/awakenedarpit", linkedin: "https://www.linkedin.com/in/awakenedarpit/", email: "mailto:awakenedarpit@gmail.com", instagram: "https://www.instagram.com/awakenedarpit/", twitter: "https://x.com/awakenedarpit" }, null, 2) },
+  ];
+}
+
 export async function fetchPortfolioJournal(): Promise<JournalRecord[] | null> {
   if (!supabase) return null;
   const { data, error } = await supabase.from("portfolio_journal").select("*").order("sort_order", { ascending: true });

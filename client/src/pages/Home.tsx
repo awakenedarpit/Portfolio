@@ -17,8 +17,8 @@ import {
   Twitter,
   X,
 } from "lucide-react";
-import { focusAreas, journey, projects, skillGroups, social } from "@/data/content";
-import { fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
+import { certifications as defaultCertifications, focusAreas, journey, projects, skillGroups, social } from "@/data/content";
+import { fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, fetchPortfolioSiteContent, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
 
 const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
@@ -45,6 +45,12 @@ function useJournalContent() {
 }
 
 
+function useLiveSiteContent() {
+  const [content, setContent] = useState<Record<string, any>>({});
+  useEffect(() => { fetchPortfolioSiteContent().then((remote) => { if (remote) setContent(remote); }).catch(() => { /* keep source fallbacks */ }); }, []);
+  return content;
+}
+
 const navItems = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
@@ -52,6 +58,7 @@ const navItems = [
   { label: "Projects", href: "#projects" },
   { label: "Journal", href: "#journal" },
   { label: "Journey", href: "#journey" },
+  { label: "Certifications", href: "#certifications" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -165,7 +172,9 @@ function SectionHeader({ index, title, copy, light = false }: { index: string; t
 }
 
 function About() {
-  return <section id="about" className="section section-light section-pad"><div className="container"><SectionHeader index="02" title="A little about the builder" copy="Not a straight line. More like a constellation of questions, prototypes, and things worth making." light /><div className="about-grid"><div className="about-statement reveal"><span>01</span><p>Learning the rules<br />to make <i>new ones.</i></p></div><div className="about-copy reveal delay-1"><p className="large-copy">I like the part before the answer — when a vague idea starts taking shape through code, sketches, and a little stubbornness.</p><p>I&apos;m currently building my foundations in AI/ML and web development, while looking for the details that make an experience feel clear, human, and worth returning to.</p><div className="about-tags">{["AI/ML", "Development", "Learning", "Building", "Experimenting"].map((tag) => <span key={tag}>{tag}</span>)}</div></div></div></div></section>;
+  const live = useLiveSiteContent().identity || {};
+  const tags = live.tags?.length ? live.tags : ["AI/ML", "Development", "Learning", "Building", "Experimenting"];
+  return <section id="about" className="section section-light section-pad"><div className="container"><SectionHeader index="02" title="A little about the builder" copy="Not a straight line. More like a constellation of questions, prototypes, and things worth making." light /><div className="about-grid"><div className="about-statement reveal"><span>01</span><p>Learning the rules<br />to make <i>new ones.</i></p></div><div className="about-copy reveal delay-1"><p className="large-copy">{live.bio || "I like the part before the answer — when a vague idea starts taking shape through code, sketches, and a little stubbornness."}</p><p>{live.about || "I&apos;m currently building my foundations in AI/ML and web development, while looking for the details that make an experience feel clear, human, and worth returning to."}</p><div className="about-tags">{tags.map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div></div></section>;
 }
 
 function CurrentlyBuilding() {
@@ -174,8 +183,10 @@ function CurrentlyBuilding() {
 
 function Skills() {
   const [selected, setSelected] = useState(0);
-  const group = skillGroups[selected];
-  return <section id="skills" className="section section-slate section-pad"><div className="container"><SectionHeader index="04" title="Tools for the journey" copy="A growing toolkit, not a list of claims. Each one is an invitation to go deeper." light /><div className="skills-layout"><div className="skill-tabs" role="tablist" aria-label="Skill categories">{skillGroups.map((item, i) => <button className={selected === i ? "selected" : ""} key={item.title} onClick={() => setSelected(i)} role="tab" aria-selected={selected === i}><span>{item.label}</span>{item.title}<ArrowUpRight size={15} /></button>)}</div><div className="skill-display reveal" role="tabpanel"><div className="skill-orb"><span>{group.label}</span></div><div><p className="display-label">Now exploring</p><h3>{group.title}</h3><div className="skill-list">{group.items.map((item) => <span key={item}><Check size={13} />{item}</span>)}</div></div></div></div></div></section>;
+  const live = useLiveSiteContent().skills?.groups;
+  const groups = live?.length ? live : skillGroups;
+  const group = groups[Math.min(selected, groups.length - 1)] || skillGroups[0];
+  return <section id="skills" className="section section-slate section-pad"><div className="container"><SectionHeader index="04" title="Tools for the journey" copy="A growing toolkit, not a list of claims. Each one is an invitation to go deeper." light /><div className="skills-layout"><div className="skill-tabs" role="tablist" aria-label="Skill categories">{groups.map((item: any, i: number) => <button className={selected === i ? "selected" : ""} key={item.title + i} onClick={() => setSelected(i)} role="tab" aria-selected={selected === i}><span>{item.label}</span>{item.title}<ArrowUpRight size={15} /></button>)}</div><div className="skill-display reveal" role="tabpanel"><div className="skill-orb"><span>{group.label}</span></div><div><p className="display-label">Now exploring</p><h3>{group.title}</h3><div className="skill-list">{(group.items || []).map((item: string) => <span key={item}><Check size={13} />{item}</span>)}</div></div></div></div></div></section>;
 }
 
 function ProjectVisual({ accent, index, images, title }: { accent: string; index: string; images?: string[]; title: string }) {
@@ -198,8 +209,16 @@ function Hackathons() {
   return <section id="hackathons" className="section section-light section-pad"><div className="container"><SectionHeader index="06" title="Short loops. Big energy." copy="Hackathons are where the distance between a thought and a prototype gets delightfully small." light /><div className="hackathon-list">{items.map((item) => { const isOpen = open === item.number; return <article className={`hackathon-row ${isOpen ? "is-open" : ""}`} key={item.id || item.number}><button type="button" className="hackathon-trigger" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : item.number)}><div className={`hackathon-mark mark-${item.color}`}><span>{item.number}</span><span className="mark-line" /></div><div className="hackathon-main"><p>{item.title}</p><h3>{item.project}</h3></div><p className="hackathon-detail">{item.detail}</p><ArrowUpRight size={19} className="hackathon-arrow" /></button>{isOpen && <div className="hackathon-description"><span>ABOUT THIS BUILD</span><p>{item.description || item.detail}</p></div>}</article>; })}</div></div></section>;
 }
 
+function Certifications() {
+  const remoteEntries = useLiveSiteContent().certifications?.entries;
+  const entries = remoteEntries?.length ? remoteEntries : defaultCertifications;
+  return <section id="certifications" className="section section-light section-pad"><div className="container"><SectionHeader index="08" title="Proof of the work" copy="Credentials, courses, and milestones that have shaped the journey." light /><div className="hackathon-list">{entries.map((item: any, index: number) => <article className="hackathon-row" key={(item.title || "certificate") + index}><div className="hackathon-trigger"><div className="hackathon-mark mark-blue"><span>{String(index + 1).padStart(2, "0")}</span><span className="mark-line" /></div><div className="hackathon-main"><p>{item.issuer || "Certificate"}</p><h3>{item.title}</h3></div><p className="hackathon-detail">{item.issue_date || ""}</p>{item.credential_url && <a className="hackathon-arrow" href={item.credential_url} target="_blank" rel="noreferrer" aria-label={"Open " + item.title + " credential"}><ArrowUpRight size={19} /></a>}</div>{item.caption && <div className="hackathon-description"><span>ABOUT THIS CREDENTIAL</span><p>{item.caption}</p></div>}</article>)}</div></div></section>;
+}
+
 function Journey() {
-  return <section id="journey" className="section section-violet section-pad"><div className="container"><SectionHeader index="07" title="The journey is the project" copy="No finish line yet. Just a useful direction and a habit of showing up." /><div className="journey-list">{journey.map((item, i) => <article className="journey-item reveal" key={item.year}><div className="journey-year">{item.year}</div><div className="journey-point"><span /><div /></div><div><h3>{item.title}</h3><p>{item.text}</p></div><span className="journey-number">0{i + 1}</span></article>)}</div></div></section>;
+  const live = useLiveSiteContent().journey?.entries;
+  const entries = live?.length ? live : journey;
+  return <section id="journey" className="section section-violet section-pad"><div className="container"><SectionHeader index="07" title="The journey is the project" copy="No finish line yet. Just a useful direction and a habit of showing up." /><div className="journey-list">{entries.map((item: any, i: number) => <article className="journey-item reveal" key={item.year + i}><div className="journey-year">{item.year}</div><div className="journey-point"><span /><div /></div><div><h3>{item.title}</h3><p>{item.text}</p></div><span className="journey-number">{String(i + 1).padStart(2, "0")}</span></article>)}</div></div></section>;
 }
 
 function Journal() {
@@ -213,7 +232,8 @@ function GithubCTA() {
 }
 
 function Contact() {
-  return <section id="contact" className="section contact-section section-pad"><div className="container contact-grid"><div><SectionHeader index="09" title={<>Let&apos;s build something<br /><em>interesting.</em></>} copy="Have an idea, project, collaboration, or simply want to connect? The best way to start is usually a good question." /><div className="contact-availability"><span className="status-dot" />Currently open to conversations around learning, building, and creative experiments.</div></div><div className="contact-links reveal delay-2"><a className="contact-link" href={social.github} target="_blank" rel="noreferrer"><span><Github size={18} />GitHub</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.linkedin} target="_blank" rel="noreferrer"><span><Linkedin size={18} />LinkedIn</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.email} aria-label="Email Arpit Raj"><span><Mail size={18} />Email</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.instagram} target="_blank" rel="noreferrer"><span><Instagram size={18} />Instagram</span><ArrowUpRight size={18} /></a><a className="contact-link" href={social.twitter} target="_blank" rel="noreferrer"><span><Twitter size={18} />X / Twitter</span><ArrowUpRight size={18} /></a></div></div></section>;
+  const live = useLiveSiteContent().contact || social;
+  return <section id="contact" className="section contact-section section-pad"><div className="container contact-grid"><div><SectionHeader index="09" title={<>Let&apos;s build something<br /><em>interesting.</em></>} copy="Have an idea, project, collaboration, or simply want to connect? The best way to start is usually a good question." /><div className="contact-availability"><span className="status-dot" />Currently open to conversations around learning, building, and creative experiments.</div></div><div className="contact-links reveal delay-2"><a className="contact-link" href={live.github} target="_blank" rel="noreferrer"><span><Github size={18} />GitHub</span><ArrowUpRight size={18} /></a><a className="contact-link" href={live.linkedin} target="_blank" rel="noreferrer"><span><Linkedin size={18} />LinkedIn</span><ArrowUpRight size={18} /></a><a className="contact-link" href={live.email} aria-label="Email Arpit Raj"><span><Mail size={18} />Email</span><ArrowUpRight size={18} /></a><a className="contact-link" href={live.instagram} target="_blank" rel="noreferrer"><span><Instagram size={18} />Instagram</span><ArrowUpRight size={18} /></a><a className="contact-link" href={live.twitter} target="_blank" rel="noreferrer"><span><Twitter size={18} />X / Twitter</span><ArrowUpRight size={18} /></a></div></div></section>;
 }
 
 function Footer() {
@@ -222,5 +242,5 @@ function Footer() {
 
 export default function Home() {
   useReveal();
-  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journal /><Journey /><GithubCTA /><Contact /></main><Footer /></>;
+  return <><ScrollProgress /><CustomCursor /><Navbar /><main><Hero /><About /><CurrentlyBuilding /><Skills /><Projects /><Hackathons /><Journal /><Certifications /><Journey /><GithubCTA /><Contact /></main><Footer /></>;
 }
