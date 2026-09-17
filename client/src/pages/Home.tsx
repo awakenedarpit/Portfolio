@@ -62,13 +62,15 @@ const navItems = [
 
 function useReveal() {
   useEffect(() => {
-    const items = document.querySelectorAll<HTMLElement>(".reveal");
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
       { threshold: 0.12 },
     );
-    items.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
+    const observe = (root: ParentNode = document) => root.querySelectorAll<HTMLElement>(".reveal:not(.is-visible)").forEach((item) => observer.observe(item));
+    observe();
+    const mutations = new MutationObserver(() => observe());
+    mutations.observe(document.getElementById("root") || document.body, { childList: true, subtree: true });
+    return () => { mutations.disconnect(); observer.disconnect(); };
   }, []);
 }
 
