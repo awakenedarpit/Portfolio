@@ -20,12 +20,10 @@ import {
 import { certifications as defaultCertifications, focusAreas, journey, projects, skillGroups, social } from "@/data/content";
 import { fetchPortfolioCertifications, fetchPortfolioHackathons, fetchPortfolioJournal, fetchPortfolioProjects, fetchPortfolioSiteContent, getFallbackHackathons, getFallbackJournal } from "@/lib/supabase";
 
-const PROJECT_STORAGE_KEY = "arpit-portfolio-projects";
 function useProjectContent() {
   const [items, setItems] = useState(projects);
   useEffect(() => {
     fetchPortfolioProjects().then((remote) => { if (remote) setItems(remote.map((project) => ({ ...project, index: project.project_index })) as typeof projects); }).catch(() => { /* keep defaults */ });
-    try { const saved = localStorage.getItem(PROJECT_STORAGE_KEY); if (saved) setItems(JSON.parse(saved)); } catch { /* keep defaults */ }
   }, []);
   return items;
 }
