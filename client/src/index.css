@@ -301,7 +301,8 @@ button { font: inherit; }
 .dashboard-source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 74px; }
 .dashboard-source-grid article { display: flex; flex-direction: column; min-height: 215px; padding: 23px; border: 1px solid rgba(17,18,24,.11); background: rgba(255,255,255,.34); scroll-margin-top: 30px; }
 .dashboard-source-grid article:nth-child(1) { border-top: 2px solid var(--violet); }.dashboard-source-grid article:nth-child(2) { border-top: 2px solid var(--peach); }.dashboard-source-grid article:nth-child(3) { border-top: 2px solid var(--mint); }.dashboard-source-grid article:nth-child(4) { border-top: 2px solid var(--blue); }.dashboard-source-grid article:nth-child(5) { border-top: 2px solid var(--violet); }
-.dashboard-source-grid h3 { margin: 12px 0 10px; color: var(--ink); font: 500 25px/1 'Space Grotesk', sans-serif; letter-spacing: -.05em; }
+.dashboard-source-grid h3 { margin: 12px 0 10px; color: var(--ink); font: 500 clamp(28px, 3vw, 42px)/.92 'Space Grotesk', sans-serif; letter-spacing: -.07em; }
+.dashboard-source-grid h3 em { color: var(--violet); font-style: normal; }
 .dashboard-source-grid p:not(.admin-kicker) { margin: 0; color: #777582; font-size: 12px; line-height: 1.7; }
 .dashboard-source-grid code { color: var(--violet); font: 10px 'DM Mono', monospace; }
 .dashboard-source-grid button { align-self: flex-start; margin-top: auto; padding: 0; border: 0; background: transparent; color: var(--violet); cursor: pointer; font: 10px 'DM Mono', monospace; }
